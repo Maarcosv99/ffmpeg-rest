@@ -5,13 +5,19 @@ export type AudioFormat = z.infer<typeof AudioFormatSchema>;
 
 export const BitrateSchema = z.string().regex(/^\d+k$/, "Bitrate must be like '64k', '128k'");
 
+export const WebhookConfigSchema = z.object({
+  url: z.string().url(),
+  metadata: z.unknown().optional(),
+  secret: z.string().min(16).optional(),
+});
+
+export type WebhookConfig = z.infer<typeof WebhookConfigSchema>;
+
 export const ConvertRequestSchema = z.object({
   url: z.string().url(),
   format: AudioFormatSchema,
   bitrate: BitrateSchema.optional(),
-  webhook: z.string().url().optional(),
-  webhookData: z.unknown().optional(),
-  webhookSecret: z.string().min(16).optional(),
+  webhook: WebhookConfigSchema.optional(),
 });
 
 export type ConvertRequest = z.infer<typeof ConvertRequestSchema>;

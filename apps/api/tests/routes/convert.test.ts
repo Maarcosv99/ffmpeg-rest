@@ -47,7 +47,7 @@ describe("POST /convert", () => {
     const res = await postConvert(app, {
       url: "https://example.com/audio.mp3",
       format: "opus",
-      webhook: "https://10.0.0.1/notify",
+      webhook: { url: "https://10.0.0.1/notify" },
     });
     expect(res.status).toBe(400);
     const body = (await res.json()) as { error: string };
@@ -60,22 +60,37 @@ describe("POST /convert", () => {
     const res = await postConvert(app, {
       url: "https://example.com/audio.mp3",
       format: "opus",
-      webhook: "https://169.254.169.254/latest/meta-data",
+      webhook: { url: "https://169.254.169.254/latest/meta-data" },
     });
     expect(res.status).toBe(400);
   });
 
-  test("accepts valid public webhook URL", async () => {
+  test("accepts valid public webhook with metadata and secret", async () => {
     const { app, queues } = createTestApp();
     const res = await postConvert(app, {
       url: "https://example.com/audio.mp3",
       format: "opus",
-      webhook: "https://hooks.example.com/notify",
-      webhookData: { id: "abc" },
-      webhookSecret: "this-is-at-least-16-chars",
+      webhook: {
+        url: "https://hooks.example.com/notify",
+        metadata: { id: "abc" },
+        secret: "this-is-at-least-16-chars",
+      },
     });
     expect(res.status).toBe(200);
     expect(queues.added).toHaveLength(1);
-    expect(queues.added[0]?.data.webhook).toBe("https://hooks.example.com/notify");
+    expect(queues.added[0]?.data.webhook?.url).toBe("https://hooks.example.com/notify");
+    expect(queues.added[0]?.data.webhook?.metadata).toEqual({ id: "abc" });
+  });
+
+  test("accepts webhook with only url field", async () => {
+    const { app, queues } = createTestApp();
+    const res = await postConvert(app, {
+      url: "https://example.com/audio.mp3",
+      format: "opus",
+      webhook: { url: "https://hooks.example.com/notify" },
+    });
+    expect(res.status).toBe(200);
+    expect(queues.added[0]?.data.webhook?.metadata).toBeUndefined();
+    expect(queues.added[0]?.data.webhook?.secret).toBeUndefined();
   });
 });

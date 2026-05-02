@@ -6,7 +6,7 @@ export const WebhookPayloadSchema = z.object({
   status: JobStatusSchema,
   outputUrl: z.string().url().nullable(),
   error: z.string().nullable(),
-  data: z.unknown().optional(),
+  metadata: z.unknown().optional(),
 });
 
 export type WebhookPayload = z.infer<typeof WebhookPayloadSchema>;

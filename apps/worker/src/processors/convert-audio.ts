@@ -24,7 +24,7 @@ export function createConvertAudioProcessor(deps: ConvertProcessorDeps) {
   const { storage, webhookQueue, env } = deps;
 
   return async function process(job: Job<ConvertAudioJobPayload>): Promise<ConvertResult> {
-    const { url, format, bitrate, webhook, webhookData, webhookSecret } = job.data;
+    const { url, format, bitrate, webhook } = job.data;
     const jobId = job.id ?? `unknown-${Date.now()}`;
 
     const workDir = await mkdtemp(join(tmpdir(), "ffmpeg-rest-"));
@@ -51,15 +51,15 @@ export function createConvertAudioProcessor(deps: ConvertProcessorDeps) {
 
       if (webhook) {
         await webhookQueue.add(QUEUE_WEBHOOK_DELIVERY, {
-          url: webhook,
+          url: webhook.url,
           payload: {
             jobId,
             status: "completed",
             outputUrl,
             error: null,
-            data: webhookData,
+            metadata: webhook.metadata,
           },
-          ...(webhookSecret !== undefined ? { secret: webhookSecret } : {}),
+          ...(webhook.secret !== undefined ? { secret: webhook.secret } : {}),
         });
       }
 
@@ -67,15 +67,15 @@ export function createConvertAudioProcessor(deps: ConvertProcessorDeps) {
     } catch (err) {
       if (webhook) {
         await webhookQueue.add(QUEUE_WEBHOOK_DELIVERY, {
-          url: webhook,
+          url: webhook.url,
           payload: {
             jobId,
             status: "failed",
             outputUrl: null,
             error: err instanceof Error ? err.message : String(err),
-            data: webhookData,
+            metadata: webhook.metadata,
           },
-          ...(webhookSecret !== undefined ? { secret: webhookSecret } : {}),
+          ...(webhook.secret !== undefined ? { secret: webhook.secret } : {}),
         });
       }
       throw err;

@@ -15,9 +15,20 @@ describe("ConvertRequestSchema", () => {
       url: "https://example.com/audio.mp3",
       format: "opus",
       bitrate: "64k",
-      webhook: "https://hook.example.com/notify",
-      webhookData: { orderId: "abc-123" },
-      webhookSecret: "this-is-at-least-16-chars",
+      webhook: {
+        url: "https://hook.example.com/notify",
+        metadata: { orderId: "abc-123" },
+        secret: "this-is-at-least-16-chars",
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  test("accepts webhook with only url (metadata and secret optional)", () => {
+    const result = ConvertRequestSchema.safeParse({
+      url: "https://example.com/audio.mp3",
+      format: "opus",
+      webhook: { url: "https://hook.example.com/notify" },
     });
     expect(result.success).toBe(true);
   });
@@ -47,20 +58,32 @@ describe("ConvertRequestSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  test("rejects webhook secret shorter than 16 chars", () => {
+  test("rejects webhook.secret shorter than 16 chars", () => {
     const result = ConvertRequestSchema.safeParse({
       url: "https://example.com/audio.mp3",
       format: "opus",
-      webhookSecret: "tooshort",
+      webhook: {
+        url: "https://hook.example.com/notify",
+        secret: "tooshort",
+      },
     });
     expect(result.success).toBe(false);
   });
 
-  test("rejects non-URL webhook", () => {
+  test("rejects webhook with non-URL url field", () => {
     const result = ConvertRequestSchema.safeParse({
       url: "https://example.com/audio.mp3",
       format: "opus",
-      webhook: "not-a-url",
+      webhook: { url: "not-a-url" },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  test("rejects webhook without url field", () => {
+    const result = ConvertRequestSchema.safeParse({
+      url: "https://example.com/audio.mp3",
+      format: "opus",
+      webhook: { metadata: { x: 1 } },
     });
     expect(result.success).toBe(false);
   });

@@ -15,7 +15,7 @@ UI da OpenAPI em <http://localhost:3000/openapi>.
 
 ## Endpoints
 
-- `POST /convert` — async. Body: `{ url, format, bitrate?, webhook?, webhookData?, webhookSecret? }`. Retorna `{ jobId, statusUrl }`.
+- `POST /convert` — async. Body: `{ url, format, bitrate?, webhook?: { url, metadata?, secret? } }`. Retorna `{ jobId, statusUrl }`.
 - `GET /jobs/:id` — status do job + `outputUrl` quando pronto
 - `GET /health` — healthcheck (Railway)
 - `GET /openapi` — UI Scalar

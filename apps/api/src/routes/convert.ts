@@ -12,7 +12,7 @@ export function convertRoute(queues: Queues, env: Env) {
     "/convert",
     async ({ body, set }) => {
       if (body.webhook) {
-        const validation = validateWebhookUrlSync(body.webhook, {
+        const validation = validateWebhookUrlSync(body.webhook.url, {
           allowHttp: env.ALLOW_HTTP_WEBHOOKS,
         });
         if (!validation.ok) {

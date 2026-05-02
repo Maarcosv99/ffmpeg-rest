@@ -15,7 +15,7 @@ sequenceDiagram
   participant S as S3 / R2
   participant H as Webhook URL
 
-  C->>A: POST /convert { url, format, webhook? }
+  C->>A: POST /convert { url, format, webhook?: { url, metadata?, secret? } }
   A->>Q: enqueue convert-audio
   A-->>C: { jobId, statusUrl }
   Q->>W: consume convert-audio

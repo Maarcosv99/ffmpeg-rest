@@ -74,7 +74,7 @@ const samplePayload: WebhookPayload = {
   status: "completed",
   outputUrl: "https://example.com/out.opus",
   error: null,
-  data: { custom: 1 },
+  metadata: { custom: 1 },
 };
 
 describe("webhook-delivery processor", () => {
