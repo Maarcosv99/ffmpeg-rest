@@ -1,0 +1,14 @@
+{
+  "name": "@ffmpeg-rest/api",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@elysiajs/openapi": "^1.4.0",
+    "@ffmpeg-rest/redis": "workspace:*",
+    "@ffmpeg-rest/shared": "workspace:*",
+    "bullmq": "^5.34.5",
+    "elysia": "^1.4.0",
+    "zod": "^3.24.0",
+    "zod-to-json-schema": "^3.24.0"
+  }
+}

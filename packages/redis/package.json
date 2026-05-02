@@ -1,0 +1,11 @@
+{
+  "name": "@ffmpeg-rest/redis",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "ioredis": "^5.4.1"
+  }
+}

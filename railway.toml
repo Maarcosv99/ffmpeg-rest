@@ -1,0 +1,22 @@
+# Railway configuration. Two services pointing to the same Dockerfile,
+# differentiated by the SERVICE build arg. Redis is added separately
+# from the Railway marketplace (1-click) and exposes REDIS_URL.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[[services]]
+name = "api"
+[services.api.build]
+buildArgs = { SERVICE = "api" }
+[services.api.deploy]
+healthcheckPath = "/health"
+restartPolicyType = "always"
+
+[[services]]
+name = "worker"
+[services.worker.build]
+buildArgs = { SERVICE = "worker" }
+[services.worker.deploy]
+restartPolicyType = "always"

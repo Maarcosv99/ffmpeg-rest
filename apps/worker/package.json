@@ -1,0 +1,12 @@
+{
+  "name": "@ffmpeg-rest/worker",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@ffmpeg-rest/ffmpeg": "workspace:*",
+    "@ffmpeg-rest/redis": "workspace:*",
+    "@ffmpeg-rest/shared": "workspace:*",
+    "@ffmpeg-rest/storage": "workspace:*",
+    "bullmq": "^5.34.5"
+  }
+}
