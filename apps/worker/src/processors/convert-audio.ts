@@ -32,7 +32,12 @@ export function createConvertAudioProcessor(deps: ConvertProcessorDeps) {
     const outputPath = join(workDir, `output.${format}`);
 
     try {
-      await downloadToFile(url, inputPath, env.MAX_INPUT_BYTES);
+      await downloadToFile({
+        url,
+        destPath: inputPath,
+        maxBytes: env.MAX_INPUT_BYTES,
+        timeoutMs: env.DOWNLOAD_TIMEOUT_MS,
+      });
 
       await convertAudio({
         inputPath,

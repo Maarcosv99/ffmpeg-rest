@@ -16,3 +16,8 @@ export const WEBHOOK_RETRY_OPTIONS = {
   attempts: 5,
   backoff: { type: "exponential" as const, delay: 30_000 },
 } as const;
+
+export const CONVERT_RETRY_OPTIONS = {
+  attempts: 3,
+  backoff: { type: "exponential" as const, delay: 5_000, jitter: 0.5 },
+} as const;

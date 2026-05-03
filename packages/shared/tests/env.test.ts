@@ -37,6 +37,28 @@ describe("loadEnv", () => {
     expect(env.S3_KEY_PREFIX).toBe("outputs/");
   });
 
+  test("DOWNLOAD_TIMEOUT_MS defaults to 60000", () => {
+    resetEnvCache();
+    const env = loadEnv(validEnv as NodeJS.ProcessEnv);
+    expect(env.DOWNLOAD_TIMEOUT_MS).toBe(60_000);
+  });
+
+  test("DOWNLOAD_TIMEOUT_MS accepts a custom positive integer", () => {
+    resetEnvCache();
+    const env = loadEnv({
+      ...validEnv,
+      DOWNLOAD_TIMEOUT_MS: "30000",
+    } as NodeJS.ProcessEnv);
+    expect(env.DOWNLOAD_TIMEOUT_MS).toBe(30_000);
+  });
+
+  test("DOWNLOAD_TIMEOUT_MS rejects zero/negative", () => {
+    resetEnvCache();
+    expect(() => loadEnv({ ...validEnv, DOWNLOAD_TIMEOUT_MS: "0" } as NodeJS.ProcessEnv)).toThrow(
+      /DOWNLOAD_TIMEOUT_MS/,
+    );
+  });
+
   test("coerces ALLOW_HTTP_WEBHOOKS=true to boolean true", () => {
     resetEnvCache();
     const env = loadEnv({

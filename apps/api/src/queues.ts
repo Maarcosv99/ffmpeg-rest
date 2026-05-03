@@ -1,5 +1,6 @@
 import type { Redis } from "@ffmpeg-rest/redis";
 import {
+  CONVERT_RETRY_OPTIONS,
   type ConvertAudioJobPayload,
   JOB_RETENTION,
   QUEUE_CONVERT_AUDIO,
@@ -18,7 +19,7 @@ export type Queues = {
 export function createQueues(connection: Redis): Queues {
   const convertAudio = new Queue<ConvertAudioJobPayload>(QUEUE_CONVERT_AUDIO, {
     connection,
-    defaultJobOptions: { ...JOB_RETENTION },
+    defaultJobOptions: { ...JOB_RETENTION, ...CONVERT_RETRY_OPTIONS },
   });
 
   const webhookDelivery = new Queue<WebhookDeliveryJobPayload>(QUEUE_WEBHOOK_DELIVERY, {

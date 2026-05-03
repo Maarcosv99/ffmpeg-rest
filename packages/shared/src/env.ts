@@ -25,6 +25,7 @@ const EnvSchema = z.object({
     .transform((v) => v === "true"),
 
   FFMPEG_TIMEOUT_MS: z.coerce.number().int().positive().default(300_000),
+  DOWNLOAD_TIMEOUT_MS: z.coerce.number().int().positive().default(60_000),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

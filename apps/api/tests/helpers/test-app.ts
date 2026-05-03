@@ -59,6 +59,7 @@ export function createFakeEnv(overrides: Partial<Env> = {}): Env {
     WEBHOOK_CONCURRENCY: 10,
     ALLOW_HTTP_WEBHOOKS: false,
     FFMPEG_TIMEOUT_MS: 300_000,
+    DOWNLOAD_TIMEOUT_MS: 60_000,
     ...overrides,
   };
 }

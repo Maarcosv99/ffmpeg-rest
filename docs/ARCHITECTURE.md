@@ -124,14 +124,16 @@ flowchart LR
 
 1. `POST /convert` — API valida com Zod, valida URL do webhook (se houver), enfileira em `convert-audio`, retorna `jobId`
 2. Worker `convert-audio` consome:
-   - Baixa input com `fetch` streaming, valida `Content-Length` ≤ `MAX_INPUT_BYTES`
+   - Baixa input com `fetch` streaming, valida `Content-Length` ≤ `MAX_INPUT_BYTES` no header e via `Transform` durante o stream. `AbortController` corta a request se passar de `DOWNLOAD_TIMEOUT_MS` (default 60s)
    - Roda ffmpeg com array de args, output em `/tmp/{jobId}/output.{format}`
-   - Sobe pro R2 com chave `{jobId}.{format}`
+   - Sobe pro R2 via `Upload.done()` da `@aws-sdk/lib-storage` (Body retry-friendly pelo `S3Client` em hiccups transitórios — diferente de `PutObjectCommand` + stream consumida)
    - Atualiza estado do job com `outputUrl`
 3. **Se** havia `webhook`:
    - Worker enfileira em `webhook-delivery` com `{ url, payload, secret? }`
    - Worker `webhook-delivery` faz POST com retries
 4. Cliente recebe via webhook ou consulta via polling em `GET /jobs/:id`
+
+**Resiliência a falhas transitórias.** Cada job na queue `convert-audio` tem `attempts: 3` com backoff exponencial (5s/10s/20s) e `jitter: 0.5` — se download, ffmpeg ou upload falharem por hiccup de rede ou 5xx do R2, BullMQ reenfileira automaticamente. Jitter previne thundering herd quando muitos jobs falham por causa comum (ex: regional throttling). A queue `webhook-delivery` mantém retry independente (5 tentativas, backoff de 30s) para que ffmpeg não rode de novo só porque o endpoint do cliente está temporariamente fora.
 
 ## Como rodar localmente
 

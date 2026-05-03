@@ -1,6 +1,7 @@
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
-import { PutObjectCommand, type S3Client } from "@aws-sdk/client-s3";
+import type { S3Client } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
 import { type StorageConfig, createStorageClient } from "./client.ts";
 
 export { createStorageClient };
@@ -17,15 +18,17 @@ export function createStorage(config: StorageConfig): Storage {
   return {
     async putObject({ key, filePath, contentType }) {
       const stats = await stat(filePath);
-      await client.send(
-        new PutObjectCommand({
+      const upload = new Upload({
+        client,
+        params: {
           Bucket: config.bucket,
           Key: key,
           Body: createReadStream(filePath),
           ContentType: contentType,
           ContentLength: stats.size,
-        }),
-      );
+        },
+      });
+      await upload.done();
       return getPublicUrl(config, key);
     },
     getPublicUrl(key) {

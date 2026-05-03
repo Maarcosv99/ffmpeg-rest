@@ -21,6 +21,7 @@ const BASE_ENV: Env = {
   WEBHOOK_CONCURRENCY: 1,
   ALLOW_HTTP_WEBHOOKS: true,
   FFMPEG_TIMEOUT_MS: 5_000,
+  DOWNLOAD_TIMEOUT_MS: 60_000,
 };
 
 type Captured = {
