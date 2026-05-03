@@ -42,7 +42,7 @@ export function createConvertAudioProcessor(deps: ConvertProcessorDeps) {
         timeoutMs: env.FFMPEG_TIMEOUT_MS,
       });
 
-      const key = `${jobId}.${format}`;
+      const key = `${env.S3_KEY_PREFIX}${jobId}.${format}`;
       const outputUrl = await storage.putObject({
         key,
         filePath: outputPath,

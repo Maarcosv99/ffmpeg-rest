@@ -22,6 +22,21 @@ describe("loadEnv", () => {
     expect(env.ALLOW_HTTP_WEBHOOKS).toBe(false);
   });
 
+  test("S3_KEY_PREFIX defaults to empty string", () => {
+    resetEnvCache();
+    const env = loadEnv(validEnv as NodeJS.ProcessEnv);
+    expect(env.S3_KEY_PREFIX).toBe("");
+  });
+
+  test("S3_KEY_PREFIX accepts a custom value", () => {
+    resetEnvCache();
+    const env = loadEnv({
+      ...validEnv,
+      S3_KEY_PREFIX: "outputs/",
+    } as NodeJS.ProcessEnv);
+    expect(env.S3_KEY_PREFIX).toBe("outputs/");
+  });
+
   test("coerces ALLOW_HTTP_WEBHOOKS=true to boolean true", () => {
     resetEnvCache();
     const env = loadEnv({

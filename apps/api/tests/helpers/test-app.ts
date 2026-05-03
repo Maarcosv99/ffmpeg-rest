@@ -53,6 +53,7 @@ export function createFakeEnv(overrides: Partial<Env> = {}): Env {
     S3_SECRET_KEY: "secret",
     S3_PUBLIC_URL: "https://example.test/bucket",
     S3_REGION: "auto",
+    S3_KEY_PREFIX: "",
     MAX_INPUT_BYTES: 100_000_000,
     JOB_CONCURRENCY: 2,
     WEBHOOK_CONCURRENCY: 10,

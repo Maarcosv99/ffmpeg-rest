@@ -12,6 +12,7 @@ const EnvSchema = z.object({
   S3_SECRET_KEY: z.string().min(1),
   S3_PUBLIC_URL: z.string().url(),
   S3_REGION: z.string().default("auto"),
+  S3_KEY_PREFIX: z.string().default(""),
 
   MAX_INPUT_BYTES: z.coerce.number().int().positive().default(100_000_000),
 

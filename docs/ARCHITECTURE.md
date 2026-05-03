@@ -167,6 +167,20 @@ Ordem do setup (uma única vez):
 
 `watchPatterns` em cada `railway.json` evita rebuild quando você só mexe no outro app: editar `apps/api/src/...` não faz o serviço `worker` rebuildar.
 
+## Lifecycle dos arquivos de saída
+
+Os arquivos produzidos pelo worker vão para o bucket sob o prefixo definido em `S3_KEY_PREFIX` (ex: `outputs/`). A expiração é responsabilidade do bucket, não do código:
+
+- **Cloudflare R2:** painel do bucket → **Lifecycle rules → Add rule** com escopo no prefixo escolhido e ação **Delete objects** após N dias
+- **AWS S3:** equivalente em **Management → Lifecycle rules**
+
+Por que **não** implementar o delete no worker:
+- BullMQ scheduled job para apagar duplica o que o object storage já faz
+- Lifecycle do bucket é atômico e não cobra a operação de delete
+- Se o worker morrer, lifecycle continua rodando
+
+Política comum: 7 dias para um cliente típico (margem para retry/download tardio); 24h se a integração consome via webhook imediatamente.
+
 ## Como adicionar um novo codec/operação
 
 1. Adicione o formato ao `z.enum` em `packages/shared/src/schemas/convert.ts`

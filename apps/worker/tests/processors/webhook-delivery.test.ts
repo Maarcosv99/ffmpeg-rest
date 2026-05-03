@@ -15,6 +15,7 @@ const BASE_ENV: Env = {
   S3_SECRET_KEY: "s",
   S3_PUBLIC_URL: "https://example.test/t",
   S3_REGION: "auto",
+  S3_KEY_PREFIX: "",
   MAX_INPUT_BYTES: 100_000_000,
   JOB_CONCURRENCY: 1,
   WEBHOOK_CONCURRENCY: 1,
