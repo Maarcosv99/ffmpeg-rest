@@ -1,0 +1,12 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile",
+    "watchPatterns": ["apps/worker/**", "packages/**", "package.json", "bun.lock", "Dockerfile"]
+  },
+  "deploy": {
+    "startCommand": "bun apps/worker/src/index.ts",
+    "restartPolicyType": "ALWAYS"
+  }
+}

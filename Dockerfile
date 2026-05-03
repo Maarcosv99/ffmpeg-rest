@@ -12,9 +12,9 @@ COPY packages ./packages
 RUN bun install --frozen-lockfile --production=false
 
 FROM deps AS runtime
-ARG SERVICE
-ENV SERVICE=${SERVICE} \
-    NODE_ENV=production
-ENV PATH="/app/node_modules/.bin:${PATH}"
+ENV NODE_ENV=production
 
-CMD ["sh", "-c", "bun apps/${SERVICE}/src/index.ts"]
+# Each Railway service overrides this via startCommand in apps/<svc>/railway.json:
+#   bun apps/api/src/index.ts
+#   bun apps/worker/src/index.ts
+CMD ["bun", "apps/api/src/index.ts"]

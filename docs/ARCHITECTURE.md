@@ -145,13 +145,27 @@ bun run dev:api & bun run dev:worker
 
 ## Como deployar no Railway
 
-1. Push pro GitHub, criar projeto Railway, linkar repo
-2. Adicionar Redis pelo marketplace
-3. Criar dois serviços apontando para o mesmo Dockerfile:
-   - Serviço `api` com `buildArgs.SERVICE=api`
-   - Serviço `worker` com `buildArgs.SERVICE=worker`
-4. Setar env vars compartilhadas via "Reference Variables" (REDIS_URL, S3_*, etc.)
-5. Healthcheck do `api` em `/health`
+Railway não descobre múltiplos serviços automaticamente — cada um é criado manualmente, e cada um aponta pro mesmo repo mas usa um `railway.json` próprio (config-as-code). O Dockerfile é único e compartilhado; o que diferencia os dois serviços é o `startCommand` no JSON de cada app.
+
+Ordem do setup (uma única vez):
+
+1. Push pro GitHub e criar o projeto Railway linkando o repo
+2. **Adicionar Redis** pelo marketplace (1 clique — expõe `REDIS_URL` automaticamente)
+3. **Criar o serviço `api`:**
+   - O serviço inicial criado quando o repo é linkado vira a `api`
+   - Em **Settings → Config-as-Code File**, apontar para `apps/api/railway.json`
+   - Adicionar variáveis de ambiente (S3_*, REDIS_URL via Reference Variable do Redis criado, etc.)
+   - O Railway lê `dockerfilePath`, `startCommand` e `healthcheckPath` do JSON
+4. **Criar o serviço `worker`:**
+   - "+ New Service" → "GitHub Repo" → mesmo repo
+   - Em **Settings → Config-as-Code File**, apontar para `apps/worker/railway.json`
+   - Reaplicar as mesmas variáveis de ambiente (ou usar Reference Variables do serviço `api`)
+5. **Configurar Reference Variables** entre serviços:
+   - `worker.REDIS_URL = ${{Redis.REDIS_URL}}`
+   - `api.REDIS_URL = ${{Redis.REDIS_URL}}`
+   - Os outros (S3_*) vão como variáveis diretas
+
+`watchPatterns` em cada `railway.json` evita rebuild quando você só mexe no outro app: editar `apps/api/src/...` não faz o serviço `worker` rebuildar.
 
 ## Como adicionar um novo codec/operação
 

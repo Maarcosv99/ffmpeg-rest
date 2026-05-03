@@ -5,7 +5,7 @@ Manual de bordo do `ffmpeg-rest`. Leia antes de tocar em qualquer coisa.
 ## TL;DR
 
 - **Stack:** Bun + Elysia + BullMQ. Monorepo com `apps/` e `packages/`.
-- **Deploy:** Railway (1 serviço API + 1 serviço worker + 1 Redis add-on).
+- **Deploy:** Railway — 2 serviços manualmente (api + worker, ambos apontando pro mesmo repo) + 1 Redis add-on. Cada serviço usa um `railway.json` próprio (`apps/api/railway.json`, `apps/worker/railway.json`) configurado em **Settings → Config-as-Code File**.
 - **Princípio número um: simplicidade.** Reuse antes de criar; edite antes de adicionar; recuse complexidade especulativa.
 
 ## Como rodar localmente
@@ -85,6 +85,22 @@ flowchart LR
 - Ajuste de log
 
 Esses casos são pequenos demais pra justificar o overhead de criar `INDEX.md`/`TASKS.md`. Faça direto.
+
+## Deploy no Railway (passo a passo)
+
+Railway não cria múltiplos serviços automaticamente. Você cria os dois manualmente, e cada um lê seu próprio `railway.json` via Config-as-Code File.
+
+1. Linkar o repo no Railway → cria o **primeiro serviço** (vira o `api`)
+2. Em **Settings → Config-as-Code File**, apontar para `apps/api/railway.json`
+3. Adicionar Redis pelo marketplace
+4. **+ New Service → GitHub Repo → mesmo repo** (vira o `worker`)
+5. Em **Settings → Config-as-Code File**, apontar para `apps/worker/railway.json`
+6. Setar variáveis de ambiente em cada serviço:
+   - `REDIS_URL = ${{Redis.REDIS_URL}}` (Reference Variable)
+   - `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_PUBLIC_URL`, `S3_REGION`
+   - Demais com defaults: `MAX_INPUT_BYTES`, `JOB_CONCURRENCY`, `WEBHOOK_CONCURRENCY`
+
+Resultado: o serviço `api` roda `bun apps/api/src/index.ts` e o `worker` roda `bun apps/worker/src/index.ts`, ambos da mesma imagem Docker, isolados via `startCommand` no `railway.json`.
 
 ## Skills instaladas
 
