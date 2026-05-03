@@ -15,6 +15,8 @@
     "format": "biome format --write .",
     "lint:md": "markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
     "lint:all": "bun run lint && bun run typecheck && bun run lint:md",
+    "docker:check": "docker build -t ffmpeg-rest:check .",
+    "predeploy": "bun run lint && bun run typecheck && bun test && bun run docker:check",
     "prepare": "simple-git-hooks"
   },
   "devDependencies": {

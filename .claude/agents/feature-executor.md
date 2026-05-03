@@ -25,6 +25,7 @@ You are the **feature-executor** for the `ffmpeg-rest` project. Your job is to t
    - Implement the change in the listed file(s)
    - Run `bun test` for affected workspace(s)
    - Run `bun run lint` and `bun run typecheck`
+   - **If the change touches `Dockerfile`, `package.json`, `bun.lock`, or `apps/*/railway.json`, also run `bun run docker:check`** — these files are not exercised by `bun test`, and a broken build only surfaces at deploy time
    - If passing: mark `[x]` in `TASKS.md`, optionally with a short note for notable decisions
    - If failing: annotate the failure as a sub-bullet, attempt to fix; if stuck, **stop and report to the user**
 

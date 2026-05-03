@@ -9,7 +9,7 @@ FROM base AS deps
 COPY package.json bun.lock* ./
 COPY apps ./apps
 COPY packages ./packages
-RUN bun install --frozen-lockfile --production=false
+RUN bun install --frozen-lockfile --ignore-scripts
 
 FROM deps AS runtime
 ENV NODE_ENV=production

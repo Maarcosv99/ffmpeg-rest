@@ -43,7 +43,20 @@ for pkg in packages/*/; do
   pkg_name=$(basename "$pkg")
   grep -l "@ffmpeg-rest/$pkg_name" packages/*/src/*.ts 2>/dev/null
 done
+
+# Deploy-relevant files changed but no docker:check evidence?
+# If git diff includes Dockerfile / package.json / bun.lock / apps/*/railway.json,
+# verify that bun run docker:check has been run (or that CI ran it on the PR).
 ```
+
+## Deploy validation (when applicable)
+
+If the change touches **`Dockerfile`**, **`package.json`**, **`bun.lock`**, or **`apps/*/railway.json`**, the review must include evidence that the image still builds. `bun test` does not exercise these files. Either:
+
+- The author ran `bun run docker:check` locally and the output is referenced in the PR / TASKS.md, **or**
+- CI (`.github/workflows/ci.yml`) ran the `docker` job successfully on the latest commit
+
+If neither, flag as a Critical finding.
 
 ## Report format
 

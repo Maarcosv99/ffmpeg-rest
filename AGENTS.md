@@ -86,6 +86,26 @@ flowchart LR
 
 Esses casos são pequenos demais pra justificar o overhead de criar `INDEX.md`/`TASKS.md`. Faça direto.
 
+## Antes de deployar no Railway (checklist obrigatório)
+
+`bun run lint` e `bun test` **não exercitam o Dockerfile.** Erros como flag inválida no `bun install`, dep faltando, ou comando errado **só aparecem no build do Railway** — e custam um redeploy quebrado.
+
+Antes de fazer push de qualquer mudança em **`Dockerfile`**, **`package.json`**, **`bun.lock`**, **`apps/*/railway.json`** ou **dependências de runtime**, rode:
+
+```bash
+bun run docker:check
+```
+
+Isso roda `docker build -t ffmpeg-rest:check .` localmente e replica fielmente o que o Railway vai fazer. Falhou aqui → vai falhar lá. Para o caminho completo (lint + typecheck + test + docker):
+
+```bash
+bun run predeploy
+```
+
+Em CI isso já roda automaticamente: o workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) faz lint, typecheck, tests, hadolint e docker build em todo push/PR — então **se a CI passar, o Railway tem 99% de chance de buildar**.
+
+Quem está executando uma feature (`feature-executor`): se a feature mudar qualquer arquivo da lista acima, **inclua `bun run docker:check` na fase final de validação**, não apenas `bun test`.
+
 ## Deploy no Railway (passo a passo)
 
 Railway não cria múltiplos serviços automaticamente. Você cria os dois manualmente, e cada um lê seu próprio `railway.json` via Config-as-Code File.
