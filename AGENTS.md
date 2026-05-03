@@ -106,6 +106,16 @@ Em CI isso já roda automaticamente: o workflow [`.github/workflows/ci.yml`](.gi
 
 Quem está executando uma feature (`feature-executor`): se a feature mudar qualquer arquivo da lista acima, **inclua `bun run docker:check` na fase final de validação**, não apenas `bun test`.
 
+### Dependências de sistema (ffmpeg, ffprobe, qualquer binário de spawn)
+
+Quando uma feature adiciona uma dependência **de sistema** (não pacote npm/bun, mas binário CLI invocado via `child_process.spawn` ou `Bun.spawn`), ela precisa estar instalada em **três** lugares:
+
+- [`Dockerfile`](Dockerfile) (produção e `bun run docker:check` local)
+- [`.github/workflows/ci.yml`](.github/workflows/ci.yml) job `validate`, antes do `bun test` (CI)
+- README local / setup de desenvolvedor
+
+Se faltar em qualquer um, o CI ou o deploy quebra — silenciosamente, ou com erro genérico. Os testes em [`packages/ffmpeg/tests/`](packages/ffmpeg/tests/) são desenhados para rodar contra o binário **real** (ADR-005); a mesma regra se aplica a qualquer outro pacote que dependa de binários externos.
+
 ## Deploy no Railway (passo a passo)
 
 Railway não cria múltiplos serviços automaticamente. Você cria os dois manualmente, e cada um lê seu próprio `railway.json` via Config-as-Code File.

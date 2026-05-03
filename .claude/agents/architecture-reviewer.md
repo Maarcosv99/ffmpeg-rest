@@ -58,6 +58,8 @@ If the change touches **`Dockerfile`**, **`package.json`**, **`bun.lock`**, or *
 
 If neither, flag as a Critical finding.
 
+If the change adds or removes a **system dependency** (apt package, binary invoked via spawn — e.g. ffmpeg, ffprobe, imagemagick): verify it is present in (a) the `Dockerfile`, (b) the `.github/workflows/ci.yml` job that runs `bun test`, and (c) any local setup docs (`AGENTS.md` "Dependências de sistema" or `README.md`). Missing in **any** of the three is a Critical finding — the breakage will only surface when something invokes the binary in that environment.
+
 ## Report format
 
 ```markdown
